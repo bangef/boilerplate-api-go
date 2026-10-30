@@ -7,10 +7,7 @@ import (
 	"shop_echo/config"
 	"shop_echo/internal/domain"
 	appMiddleware "shop_echo/internal/middleware"
-	"shop_echo/internal/permission"
-	"shop_echo/internal/product"
-	"shop_echo/internal/role"
-	"shop_echo/internal/user"
+	"shop_echo/internal/order"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -29,15 +26,15 @@ func main() {
 	if port == "" {
 		port = "8081" // default jika kosong
 	}
-	jwtSecret := os.Getenv("JWT_SECRET")
+	// jwtSecret := os.Getenv("JWT_SECRET")
 
 	// 2. Koneksi DB & Automigrate
 	db := config.ConnectDB()
-	listTable := []any{&domain.User{}, &domain.Product{}, &domain.Role{}, &domain.Permission{}}
+	listTable := []any{&domain.User{}, &domain.Order{}}
 	if err := db.AutoMigrate(listTable...); err != nil {
 		log.Fatal("Gagal melakukan AutoMigrate:", err)
 	}
-	rdb := config.ConnectRedis() // Koneksi Redis
+	// rdb := config.ConnectRedis() // Koneksi Redis
 
 	// 4. Inisialisasi Echo & Custom Validator
 	e := echo.New()
@@ -73,11 +70,9 @@ func main() {
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(20)))
 
 	// 6. Routing
-	protected := e.Group("/api", appMiddleware.JWTMiddleware(jwtSecret))
-	user.RegisterModule(e, protected, db, rdb, jwtSecret)
-	product.RegisterModule(e, protected, db)
-	role.RegisterModule(protected, db)
-	permission.RegisterModule(protected, db)
+	// protected := e.Group("/api", appMiddleware.JWTMiddleware(jwtSecret))
+	// user.RegisterModule(e, protected, db, rdb, jwtSecret)
+	order.RegisterModule(e, db)
 
 	fmt.Printf("🚀 Server Echo REST API berjalan di http://localhost:%s\n", port)
 	e.Logger.Fatal(e.Start(":" + port))

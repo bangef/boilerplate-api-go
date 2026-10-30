@@ -9,12 +9,10 @@ import (
 )
 
 type User struct {
-	ID        uint           `gorm:"primaryKey" json:"id"`
-	Nama      string         `gorm:"type:varchar(100);not null" json:"nama"`
-	Email     string         `gorm:"type:varchar(100);not null;unique" json:"email"`
-	Password  string         `gorm:"not null" json:"-"` // agar hash password tidak muncul di response
-	Product   []Product      `gorm:"foreignKey:UserID" json:"products,omitempty"`
-	Roles     []Role         `gorm:"many2many:user_roles;" json:"roles,omitempty"` // Relasi M2M to Role
+	ID    uint   `gorm:"primaryKey" json:"id"`
+	Nama  string `gorm:"type:varchar(100);not null" json:"nama"`
+	Email string `gorm:"type:varchar(100);not null;unique" json:"email"`
+	// Password  string         `gorm:"not null" json:"-"` // agar hash password tidak muncul di response
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
